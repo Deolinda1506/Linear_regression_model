@@ -77,7 +77,7 @@ This dataset contains information about cybersecurity incidents with several key
    cd ./summative/Prediction_app
 Get the Flutter dependencies:
 
-
+```bash
 flutter pub get
 Run the app in development mode:
 
