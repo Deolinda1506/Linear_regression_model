@@ -1,63 +1,70 @@
-import asyncio
+import joblib
+import pandas as pd
 import uvicorn
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
-import joblib
-import pandas as pd
 
-# Load trained model and preprocessor
+# Load trained model
 model = joblib.load("summative/linear_regression/best_model.joblib")  # Adjust the path if necessary
 
 # Create FastAPI instance
 app = FastAPI(title="Incident Resolution Time Prediction API")
 
-# Configure CORS
+# Configure CORS (if needed)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST"],  
-    allow_headers=["*"],  
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
 )
 
-# Define input schema with Pydantic and data constraints
+# Define input schema
 class IncidentRequest(BaseModel):
-    year: int = Field(..., ge=2000, le=2100, description="Year of incident (2000-2100)")
-    financial_loss: float = Field(..., ge=0, description="Financial Loss in Million $ (≥0)")
-    affected_users: int = Field(..., ge=0, description="Number of affected users (≥0)")
-    target_industry: str = Field(..., description="Industry affected by the incident")
-    attack_source: str = Field(..., description="Source of attack")
-    vulnerability_type: str = Field(..., description="Type of security vulnerability exploited")
-    defense_mechanism: str = Field(..., description="Defense mechanism used against the attack")
+    Year: int = Field(..., ge=2000, le=2100, description="Year of incident (2000-2100)")
+    Financial_Loss_in_Million: float = Field(..., ge=0, description="Financial Loss in Million $ (≥0)")
+    Number_of_Affected_Users: int = Field(..., ge=0, description="Number of affected users (≥0)")
+    Target_Industry: str = Field(..., description="Industry affected by the incident")
+    Attack_Source: str = Field(..., description="Source of attack")
+    Security_Vulnerability_Type: str = Field(..., description="Type of security vulnerability exploited")
+    Defense_Mechanism_Used: str = Field(..., description="Defense mechanism used against the attack")
 
-# Basic API test routes
-@app.get("/class", status_code=status.HTTP_200_OK)
-async def get_greet():
-    return {"Message": "Hello API"}
+# Prediction function
+def predict_resolution_time(input_data):
+    prediction = model.predict(input_data)  # Make prediction
+    return prediction[0]  # Return the prediction value
 
+# API Test Route
 @app.get("/", status_code=status.HTTP_200_OK)
-async def get_hello():
-    return {"hello": "Incident Resolution Time Prediction API"}
+async def root():
+    return {"message": "Incident Resolution Time Prediction API is running"}
 
-# Prediction route
-@app.post('/predict', status_code=status.HTTP_200_OK)
+# Prediction Route
+@app.post("/predict", status_code=status.HTTP_200_OK)
 async def make_prediction(incident_request: IncidentRequest):
     try:
-        # Convert input to DataFrame
-        input_data = pd.DataFrame([incident_request.dict()])
+        # Convert request data to DataFrame and add dummy values
+        input_data = pd.DataFrame([{
+            "Year": incident_request.Year,
+            "Financial Loss (in Million $)": incident_request.Financial_Loss_in_Million,
+            "Number of Affected Users": incident_request.Number_of_Affected_Users,
+            "Target Industry": incident_request.Target_Industry,
+            "Attack Source": incident_request.Attack_Source,
+            "Security Vulnerability Type": incident_request.Security_Vulnerability_Type,
+            "Defense Mechanism Used": incident_request.Defense_Mechanism_Used,
+            "Country": "Unknown",  # Dummy value
+            "Attack Type": "Unknown"  # Dummy value
+        }])
 
-        # Apply preprocessing
-        input_data_transformed = preprocessor.transform(input_data)
+        # Make prediction
+        predicted_resolution_time = predict_resolution_time(input_data)
 
-        # Make prediction using the model
-        prediction = model.predict(input_data_transformed)
+        return {"Predicted Incident Resolution Time (in Hours)": round(predicted_resolution_time, 2)}
 
-        return {"Predicted Resolution Time (in Hours)": round(prediction[0], 2)}
-    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Run server
+# Run FastAPI server
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
