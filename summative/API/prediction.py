@@ -6,11 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import pandas as pd
 
-# Load trained model
+# Load trained model and preprocessor
 model = joblib.load("summative/linear_regression/best_model.joblib")  # Adjust the path if necessary
 
 # Create FastAPI instance
-app = FastAPI(title="Wine Quality Prediction API")
+app = FastAPI(title="Incident Resolution Time Prediction API")
 
 # Configure CORS
 app.add_middleware(
@@ -22,40 +22,38 @@ app.add_middleware(
 )
 
 # Define input schema with Pydantic and data constraints
-class WineQualityRequest(BaseModel):
-    type: str = Field(..., description="Type of wine (red or white)", regex="^(red|white)$")
-    fixed_acidity: float = Field(..., gt=0, description="Fixed acidity level (>0)")
-    volatile_acidity: float = Field(..., ge=0, le=2, description="Volatile acidity (0 to 2)")
-    citric_acid: float = Field(..., ge=0, le=1, description="Citric acid (0 to 1)")
-    residual_sugar: float = Field(..., ge=0, description="Residual sugar level (>0)")
-    chlorides: float = Field(..., ge=0, le=1, description="Chloride content (0 to 1)")
-    free_sulfur_dioxide: float = Field(..., ge=0, le=100, description="Free sulfur dioxide (0 to 100)")
-    total_sulfur_dioxide: float = Field(..., ge=0, le=400, description="Total sulfur dioxide (0 to 400)")
-    density: float = Field(..., ge=0.98, le=1.05, description="Density (0.98 to 1.05)")
-    pH: float = Field(..., ge=2.5, le=4.5, description="pH level (2.5 to 4.5)")
-    sulphates: float = Field(..., ge=0, le=2, description="Sulphates (0 to 2)")
-    alcohol: float = Field(..., ge=0, le=20, description="Alcohol content (0 to 20%)")
+class IncidentRequest(BaseModel):
+    year: int = Field(..., ge=2000, le=2100, description="Year of incident (2000-2100)")
+    financial_loss: float = Field(..., ge=0, description="Financial Loss in Million $ (≥0)")
+    affected_users: int = Field(..., ge=0, description="Number of affected users (≥0)")
+    target_industry: str = Field(..., description="Industry affected by the incident")
+    attack_source: str = Field(..., description="Source of attack")
+    vulnerability_type: str = Field(..., description="Type of security vulnerability exploited")
+    defense_mechanism: str = Field(..., description="Defense mechanism used against the attack")
 
-# Basic testing routes
+# Basic API test routes
 @app.get("/class", status_code=status.HTTP_200_OK)
 async def get_greet():
     return {"Message": "Hello API"}
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def get_hello():
-    return {"hello": "Wine Quality Prediction API"}
+    return {"hello": "Incident Resolution Time Prediction API"}
 
-# Prediction route with input constraints
+# Prediction route
 @app.post('/predict', status_code=status.HTTP_200_OK)
-async def make_prediction(wine_request: WineQualityRequest):
+async def make_prediction(incident_request: IncidentRequest):
     try:
         # Convert input to DataFrame
-        input_data = pd.DataFrame([wine_request.dict()])
+        input_data = pd.DataFrame([incident_request.dict()])
+
+        # Apply preprocessing
+        input_data_transformed = preprocessor.transform(input_data)
 
         # Make prediction using the model
-        prediction = model.predict(input_data)
+        prediction = model.predict(input_data_transformed)
 
-        return {"Predicted Quality": int(prediction[0])}
+        return {"Predicted Resolution Time (in Hours)": round(prediction[0], 2)}
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
