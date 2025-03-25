@@ -42,7 +42,8 @@ This dataset contains information about cybersecurity incidents with several key
 
 ### **API Endpoints:**
 
-- **Prediction Endpoint (POST):** [https://linear-regression-model-lp6t.onrender.com/predict_yield/](https://linear-regression-model-lp6t.onrender.com/predict_yield/)
+- **Prediction Endpoint (POST):** [https://linear-regression-model-lp6t.onrender.com/predict_yield/](https://linear-regression-model-lp6t.onrender.com/predict)
+
 - **Swagger Documentation:** [https://linear-regression-model-lp6t.onrender.com/docs/](https://linear-regression-model-lp6t.onrender.com/docs/)
 
 ---
@@ -53,6 +54,7 @@ This dataset contains information about cybersecurity incidents with several key
 
 - **Flutter SDK 3.0+** (for the mobile application)
 - **Android Studio** + emulator or physical Android device
+  
 
 #### **Setup Instructions:**
 
