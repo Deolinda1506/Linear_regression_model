@@ -7,7 +7,7 @@ import joblib
 import pandas as pd
 
 # Load trained model
-model = joblib.load("best_model.joblib")  # Adjust the path if necessary
+model = joblib.load("summative/linear_regression/best_model.joblib")  # Adjust the path if necessary
 
 # Create FastAPI instance
 app = FastAPI(title="Wine Quality Prediction API")
