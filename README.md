@@ -68,91 +68,69 @@ This dataset contains information about cybersecurity incidents with several key
    ```bash
    git clone https://github.com/Deolinda1506/Linear_regression_model.git
 
-Flutter App Setup:
 
-Navigate to the Flutter project directory:
+## **Flutter App Setup:**
 
-bash
-Copy
-Edit
-cd ./linear_regression_model/summative/FluttterApp
+1. **Navigate to the Flutter project directory:**
+
+   ```bash
+   cd ./summative/Prediction_app
 Get the Flutter dependencies:
 
-bash
-Copy
-Edit
+
 flutter pub get
 Run the app in development mode:
 
-bash
-Copy
-Edit
+
 flutter run
-If using an emulator: Ensure the Android/iOS emulator is running.
+If using an emulator: Ensure the Android/iOS simulator is running.
+
 
 If using a physical device: Connect your device via USB and enable USB debugging.
 
 To Build a Release Version:
-
 For Android:
 
-bash
-Copy
-Edit
+
 flutter build apk
 For iOS:
 
-bash
-Copy
-Edit
+
 flutter build ios
-Running the API Locally
+Running the API Locally:
 Navigate to the API directory:
 
-bash
-Copy
-Edit
-cd ./linear_regression_model/summative/API
+cd summative
 Install the required Python packages:
 
-bash
-Copy
-Edit
 pip install -r requirements.txt
 Start the server using Uvicorn:
 
-bash
-Copy
-Edit
+
 uvicorn summative.API.prediction:app --host 0.0.0.0 --port 8000
 The API will be available at:
 
-arduino
-Copy
-Edit
+
 http://localhost:8000
 Running the API Locally for Development:
 If you need to run the API on your local machine for development purposes, follow these steps:
 
 Activate your Python environment (optional, but recommended for managing dependencies):
 
-bash
-Copy
-Edit
+For macOS/Linux:
+
+
 python3 -m venv venv
-source venv/bin/activate  # For macOS/Linux
-venv\Scripts\activate     # For Windows
+source venv/bin/activate
+For Windows:
+
+python3 -m venv venv
+venv\Scripts\activate
 Install dependencies from requirements.txt:
 
-bash
-Copy
-Edit
 pip install -r requirements.txt
 Run the application using Uvicorn:
-
-bash
-Copy
-Edit
+t
 uvicorn summative.API.prediction:app --reload
 Access the API:
 
