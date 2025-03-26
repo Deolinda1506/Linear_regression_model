@@ -6,12 +6,12 @@ from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 
 # Load trained model
-model = joblib.load("summative/linear_regression/best_model.joblib")  # Adjust the path if necessary
+model = joblib.load("summative/linear_regression/best_model.joblib")
 
 # Create FastAPI instance
 app = FastAPI(title="Incident Resolution Time Prediction API")
 
-# Configure CORS (if needed)
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -29,42 +29,43 @@ class IncidentRequest(BaseModel):
     Attack_Source: str = Field(..., description="Source of attack")
     Security_Vulnerability_Type: str = Field(..., description="Type of security vulnerability exploited")
     Defense_Mechanism_Used: str = Field(..., description="Defense mechanism used against the attack")
+    Country: str = Field(..., description="Country of the incident")  # Add Country field
+    Attack_Type: str = Field(..., description="Type of attack")  # Add Attack_Type field
+
 
 # Prediction function
 def predict_resolution_time(input_data):
-    prediction = model.predict(input_data)  # Make prediction
-    return prediction[0]  # Return the prediction value
+    prediction = model.predict(input_data)
+    return prediction[0]
+
 
 # API Test Route
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root():
     return {"message": "Incident Resolution Time Prediction API is running"}
 
+
 # Prediction Route
 @app.post("/predict", status_code=status.HTTP_200_OK)
 async def make_prediction(incident_request: IncidentRequest):
     try:
-        # Convert request data to DataFrame and add dummy values
+        # Create input DataFrame with correct column names
         input_data = pd.DataFrame([{
             "Year": incident_request.Year,
-            "Financial Loss (in Million $)": incident_request.Financial_Loss_in_Million,
+            "Financial Loss (in Million $)": incident_request.Financial_Loss_in_Million,  # Correct column name
             "Number of Affected Users": incident_request.Number_of_Affected_Users,
             "Target Industry": incident_request.Target_Industry,
             "Attack Source": incident_request.Attack_Source,
             "Security Vulnerability Type": incident_request.Security_Vulnerability_Type,
             "Defense Mechanism Used": incident_request.Defense_Mechanism_Used,
-            "Country": "Unknown",  # Dummy value
-            "Attack Type": "Unknown"  # Dummy value
+            "Country": incident_request.Country,  # Include Country
+            "Attack Type": incident_request.Attack_Type  # Include Attack_Type
         }])
 
         # Make prediction
         predicted_resolution_time = predict_resolution_time(input_data)
 
-        return {"Predicted Incident Resolution Time (in Hours)": round(predicted_resolution_time, 2)}
+        return {"predicted_resolution_time": predicted_resolution_time}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-# Run FastAPI server
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

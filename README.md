@@ -103,11 +103,15 @@ Navigate to the API directory:
 
 cd summative
 Install the required Python packages:
+python -m uvicorn --version or
+pip install fastapi pydantic uvicorn
+
+
 
 pip install -r requirements.txt
 Start the server using Uvicorn:
 
-
+python -m uvicorn summative.API.prediction:app --host 0.0.0.0 --port 8000
 uvicorn summative.API.prediction:app --host 0.0.0.0 --port 8000
 The API will be available at:
 
@@ -132,8 +136,7 @@ Install dependencies from requirements.txt:
 pip install -r requirements.txt
 Run the application using Uvicorn:
 t
-uvicorn summative.API.prediction:app --reload
-Access the API:
+python -m uvicorn summative.API.prediction:app --host 0.0.0.0 --port 8000
 
 The API will be accessible at http://localhost:8000 and the Swagger documentation will be available at http://localhost:8000/docs.
 
