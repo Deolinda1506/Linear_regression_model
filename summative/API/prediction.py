@@ -22,7 +22,7 @@ app.add_middleware(
 
 # Define input schema
 class IncidentRequest(BaseModel):
-    Year: int = Field(..., ge=2000, le=2100, description="Year of incident (2000-2100)")
+    Year: int = Field(..., ge=2015, le=2024, description="Year of incident (2015-2024)")
     Financial_Loss_in_Million: float = Field(..., ge=0, description="Financial Loss in Million $ (≥0)")
     Number_of_Affected_Users: int = Field(..., ge=0, description="Number of affected users (≥0)")
     Target_Industry: str = Field(..., description="Industry affected by the incident")
