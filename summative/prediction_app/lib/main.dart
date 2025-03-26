@@ -1157,8 +1157,14 @@ class _PredictionFormScreenState extends State<PredictionFormScreen>
   }) {
     final screenSize = MediaQuery.of(context).size;
     final isSmallScreen = screenSize.width < 600;
+    final isMediumScreen = screenSize.width >= 600 && screenSize.width < 900;
 
     return Container(
+      width: double.infinity,
+      constraints: BoxConstraints(
+        minWidth: 0,
+        maxWidth: screenSize.width * 0.95,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -1169,7 +1175,7 @@ class _PredictionFormScreenState extends State<PredictionFormScreen>
         hint: Text(
           'Select $label',
           style: GoogleFonts.inter(
-            fontSize: isSmallScreen ? 10 : 12,
+            fontSize: isSmallScreen ? 10 : (isMediumScreen ? 14 : 16),
             color: Colors.grey[600],
           ),
         ),
@@ -1178,38 +1184,39 @@ class _PredictionFormScreenState extends State<PredictionFormScreen>
           prefixIcon: prefixIcon != null
               ? Icon(
                   prefixIcon,
-                  size: isSmallScreen ? 14 : 16,
+                  size: isSmallScreen ? 14 : (isMediumScreen ? 18 : 20),
                   color: const Color(0xFF1A237E).withOpacity(0.7),
                 )
               : null,
-          labelStyle: GoogleFonts.inter(fontSize: isSmallScreen ? 10 : 12),
+          labelStyle: GoogleFonts.inter(
+            fontSize: isSmallScreen ? 10 : (isMediumScreen ? 14 : 16),
+          ),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(
-            horizontal: isSmallScreen ? 10 : 12,
-            vertical: isSmallScreen ? 8 : 10,
+            horizontal: isSmallScreen ? 10 : (isMediumScreen ? 14 : 16),
+            vertical: isSmallScreen ? 8 : (isMediumScreen ? 12 : 14),
           ),
         ),
         style: GoogleFonts.inter(
-          fontSize: isSmallScreen ? 10 : 12,
+          fontSize: isSmallScreen ? 10 : (isMediumScreen ? 14 : 16),
           color: const Color(0xFF1A237E),
           fontWeight: FontWeight.w500,
         ),
         dropdownColor: Colors.white,
         isExpanded: true,
-        icon: Icon(Icons.arrow_drop_down, size: isSmallScreen ? 18 : 20),
+        icon: Icon(
+          Icons.arrow_drop_down,
+          size: isSmallScreen ? 18 : (isMediumScreen ? 24 : 28),
+        ),
         menuMaxHeight: MediaQuery.of(context).size.height * 0.4,
         items: items.map((item) {
           return DropdownMenuItem<String>(
             value: item,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 6 : 8),
-              child: Text(
-                item,
-                style: GoogleFonts.inter(
-                  fontSize: isSmallScreen ? 10 : 12,
-                  color: const Color(0xFF1A237E),
-                ),
-                overflow: TextOverflow.ellipsis,
+            child: Text(
+              item,
+              style: GoogleFonts.inter(
+                fontSize: isSmallScreen ? 10 : (isMediumScreen ? 14 : 16),
+                color: const Color(0xFF1A237E),
               ),
             ),
           );
@@ -1223,16 +1230,12 @@ class _PredictionFormScreenState extends State<PredictionFormScreen>
         },
         selectedItemBuilder: (context) {
           return items.map((item) {
-            return Container(
-              padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 6 : 8),
-              child: Text(
-                item,
-                style: GoogleFonts.inter(
-                  fontSize: isSmallScreen ? 10 : 12,
-                  color: const Color(0xFF1A237E),
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
+            return Text(
+              item,
+              style: GoogleFonts.inter(
+                fontSize: isSmallScreen ? 10 : (isMediumScreen ? 14 : 16),
+                color: const Color(0xFF1A237E),
+                fontWeight: FontWeight.w500,
               ),
             );
           }).toList();
